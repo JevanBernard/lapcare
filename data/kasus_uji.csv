@@ -1,0 +1,7 @@
+id_kasus,gejala_dipilih,massa_diharapkan,diagnosis_utama,sumber_ekspektasi,catatan
+KU01,"G1;G2","K1=0.5;K1|K2=0.3;THETA=0.2",K1,"Saragih dkk. (2018) hlm. 108 (m3)","Bel(K1)=0.5, Pl(K1)=1.0; Bel(K2)=0, Pl(K2)=0.5"
+KU02,"G1;G2;G3","K1=0.85;K1|K2=0.09;THETA=0.06",K1,"Saragih dkk. (2018) hlm. 108-109, angka dikoreksi","Jurnal menulis 0.3+0.22 (seharusnya 0.3+0.2), label K4 (seharusnya K1), dan kesimpulan 0.87 (tabelnya menghasilkan 0.85)"
+KU03,"G9","K4=0.8;THETA=0.2",K4,"Hitung manual kelompok","Satu gejala, himpunan tunggal"
+KU04,"G1;G5","K1|K2=0.375;K3|K4|K10=0.375;THETA=0.25",TIDAK_TUNGGAL,"Hitung manual kelompok","Dua gejala berhimpunan berbeda tanpa irisan: konflik K=0.36, penyebut 0.64. Tidak ada kerusakan tunggal dengan Belief > 0"
+KU05,"G13;G49","K15=6/11;K5=7/22;THETA=3/22",K15,"Hitung manual kelompok","Konflik K=0.56, penyebut 0.44. Menguji normalisasi"
+KU06,"G9;G49","K4=4/9;K15=4/9;THETA=1/9",SERI,"Hitung manual kelompok","Kasus seri: dua kerusakan dengan Belief sama. Perlu aturan pemutus seri"

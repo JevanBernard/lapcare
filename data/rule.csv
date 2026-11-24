@@ -1,0 +1,27 @@
+no_rule,gejala,kerusakan,jumlah_gejala,sumber,catatan
+R1,G1;G2;G3,K1,3,Saragih dkk. (2018) Rule 1,
+R2,G1;G4,K2,2,Saragih dkk. (2018) Rule 2,
+R3,G5;G6;G7;G8,K3,4,Saragih dkk. (2018) Rule 3,Kode gejala dipetakan dari teks rule (jurnal tidak mencantumkan kode)
+R4,G5;G9;G10;G11;G12,K4,5,Saragih dkk. (2018) Rule 4,Kode gejala dipetakan dari teks rule
+R5,G13;G14;G15,K5,3,Saragih dkk. (2018) Rule 5,Kode gejala dipetakan dari teks rule
+R6,G16;G17;G18;G19;G20,K6,5,Saragih dkk. (2018) Rule 6,Kode gejala dipetakan dari teks rule
+R7,G21;G22;G23;G24;G25;G26,K7,6,Saragih dkk. (2018) Rule 7,Kode gejala dipetakan dari teks rule
+R8,G27;G28;G29;G30,K8,4,Saragih dkk. (2018) Rule 8,Kode gejala dipetakan dari teks rule
+R9,G31;G32;G33,K9,3,Saragih dkk. (2018) Rule 9,Kode gejala dipetakan dari teks rule
+R10,G5;G34;G35,K10,3,Saragih dkk. (2018) Rule 10,Kode gejala dipetakan dari teks rule
+R11,G36;G37;G38,K11,3,Saragih dkk. (2018) Rule 11,Kode gejala dipetakan dari teks rule
+R12,G39;G40;G41;G42;G43,K12,5,Saragih dkk. (2018) Rule 12,Kode gejala dipetakan dari teks rule
+R13,G44;G45;G46,K13,3,Saragih dkk. (2018) Rule 13,Kode gejala dipetakan dari teks rule
+R14,G47;G48,K14,2,Saragih dkk. (2018) Rule 14,Kode gejala dipetakan dari teks rule
+R15,G49;G50;G51;G52,K15,4,Saragih dkk. (2018) Rule 15,Kode gejala dipetakan dari teks rule
+R16,G53,K2,1,Arifin & Norhikmah (2024) Tabel 6 (d01),
+R17,G54,K16,1,Arifin & Norhikmah (2024) Tabel 6 (h01),
+R18,G55;G56;G57,K17,3,Arifin & Norhikmah (2024) Tabel 6 (i01),
+R19,G25;G58,K7,2,Arifin & Norhikmah (2024) Tabel 6 (j01),Jurnal menulis 'g1 AND g2' (salah ketik); dibaca j1;j2 sesuai Tabel 8. Rule a01-g01 tidak ditambahkan karena sudah tercakup rule Saragih; versi OR (a02 dst.) tidak dipakai
+R20,G50;G59,K15,2,Hilda dkk. (2023) Tabel 4-3 (Aturan 5),"Lengkap: kedua gejala Hilda (G12, G13) terpetakan"
+R21,G40;G41;G60,K12,3,Hilda dkk. (2023) Tabel 4-3 (Aturan 7),"Hilda G14 dan G15 dikeluarkan karena dipetakan ke gejala charger (G28, G30; K8), bukan baterai"
+R22,G60;G62;G63,K17,3,Hilda dkk. (2023) Tabel 4-3 (Aturan 11),"Hilda G23, G30 (dipetakan ke G35, K10) dan G31 (konflik dengan G4, K2) dikeluarkan"
+R23,G21;G22;G24;G25;G26;G61,K7,6,Hilda dkk. (2023) Tabel 4-3 (Aturan 9),"Hilda G23 (ke G35, K10) dan G24 (konflik dengan G55) dikeluarkan"
+R24,G31;G33;G67,K9,3,Hilda dkk. (2023) Tabel 4-3 (Aturan 15),Lengkap: ketiga gejala Hilda terpetakan
+R25,G44;G65;G66,K13,3,Hilda dkk. (2023) Tabel 4-3 (Aturan 14),Lengkap: ketiga gejala Hilda terpetakan
+R26,G64,K18,1,Hilda dkk. (2023) Tabel 4-3 (Aturan 13),"Hilda G01 dikeluarkan karena dipetakan ke G5 (K3,K4,K10), tidak menunjuk IC BIOS di data Saragih"

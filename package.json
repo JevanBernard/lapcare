@@ -1,0 +1,11 @@
+{
+  "name": "lapcare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LapCare — sistem pakar diagnosis kerusakan hardware laptop (Dempster-Shafer). Aplikasi statis tanpa backend.",
+  "scripts": {
+    "build": "node scripts/build-data.js",
+    "test": "node scripts/build-data.js && node scripts/test-ds.js",
+    "serve": "npx --yes http-server -p 5173 -c-1 ."
+  }
+}

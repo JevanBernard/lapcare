@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LapCare — Diagnosis Kerusakan Laptop</title>
+  <meta name="description" content="Sistem pakar diagnosis kerusakan hardware laptop dengan teori Dempster-Shafer. Pilih gejala, lihat kerusakan paling mungkin, Belief–Plausibility, langkah perhitungan, dan solusi.">
+  <meta name="theme-color" content="#FAF101">
+  <meta property="og:title" content="LapCare — Diagnosis Kerusakan Laptop">
+  <meta property="og:description" content="Sistem pakar Dempster-Shafer: 18 kerusakan, 67 gejala, 26 rule dari 3 jurnal.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%23000'/%3E%3Cpath d='M16 40h32M20 22h24v14H20z' stroke='%23FAF101' stroke-width='5' fill='none' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!-- Font opsional: bila offline, tampilan jatuh ke font sistem tanpa merusak tata letak -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Lewati ke konten utama</a>
+
+  <header class="topbar" id="topbar">
+    <div class="wrap">
+      <a class="brand" href="#/" aria-label="LapCare, ke beranda">
+        <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14v9H5zM3 19h18"/></svg></span>
+        LapCare
+      </a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="#/" data-nav="beranda">Beranda</a>
+        <a href="#/diagnosis" data-nav="diagnosis">Diagnosis</a>
+        <a href="#/pengetahuan" data-nav="pengetahuan">Basis Pengetahuan</a>
+        <a href="#/pengujian" data-nav="pengujian">Pengujian</a>
+        <a href="#/metode" data-nav="metode">Metode</a>
+      </nav>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Buka menu" aria-expanded="false" aria-controls="drawer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="drawer__top">
+      <span class="brand"><span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14v9H5zM3 19h18"/></svg></span>LapCare</span>
+      <button class="icon-btn" id="drawerClose" aria-label="Tutup menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <a class="drawer__link" href="#/" data-nav="beranda">Beranda</a>
+    <a class="drawer__link" href="#/diagnosis" data-nav="diagnosis">Diagnosis</a>
+    <a class="drawer__link" href="#/pengetahuan" data-nav="pengetahuan">Basis Pengetahuan</a>
+    <a class="drawer__link" href="#/pengujian" data-nav="pengujian">Pengujian</a>
+    <a class="drawer__link" href="#/metode" data-nav="metode">Metode</a>
+    <p class="drawer__foot">Kelompok 2 · Pengantar Komputasi Lunak · Informatika Universitas Udayana</p>
+  </div>
+
+  <main id="main" tabindex="-1"></main>
+
+  <footer class="footer" aria-labelledby="footer-cta">
+    <div class="wrap">
+      <div class="footer__cta">
+        <h2 id="footer-cta">Laptop bermasalah?<br><span>Cari tahu dalam dua menit.</span></h2>
+        <a class="btn btn--yellow btn--lg" href="#/diagnosis">Mulai Diagnosis <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <span class="brand"><span class="brand__mark brand__mark--y" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14v9H5zM3 19h18"/></svg></span>LapCare</span>
+          <p>Sistem pakar diagnosis kerusakan hardware laptop dengan teori Dempster-Shafer. Semua perhitungan berjalan di browser memakai pecahan eksak.</p>
+          <div class="fpills">
+            <span class="fpill"><i class="led" aria-hidden="true"></i>Siap dipakai offline</span>
+            <span class="fpill" data-f="uji">6/6 uji cocok</span>
+          </div>
+        </div>
+        <nav class="footer__col" aria-label="Navigasi footer">
+          <h3>Jelajahi</h3>
+          <ul>
+            <li><a href="#/">Beranda</a></li>
+            <li><a href="#/diagnosis">Diagnosis</a></li>
+            <li><a href="#/pengetahuan">Basis Pengetahuan</a></li>
+            <li><a href="#/pengujian">Pengujian</a></li>
+            <li><a href="#/metode">Tentang Metode</a></li>
+          </ul>
+        </nav>
+        <div class="footer__col">
+          <h3>Basis pengetahuan</h3>
+          <ul>
+            <li><a href="#/pengetahuan?tab=kerusakan"><b data-f="k">18</b> kerusakan</a></li>
+            <li><a href="#/pengetahuan?tab=gejala"><b data-f="g">67</b> gejala</a></li>
+            <li><a href="#/pengetahuan?tab=rule"><b data-f="r">26</b> rule</a></li>
+            <li><a href="#/pengetahuan?tab=solusi"><b data-f="s">18</b> solusi</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h3>Sumber jurnal</h3>
+          <ul class="footer__plain">
+            <li>Saragih dkk. (2018)<small>Sumber utama</small></li>
+            <li>Arifin &amp; Norhikmah (2024)<small>Pelengkap</small></li>
+            <li>Hilda dkk. (2023)<small>Pelengkap</small></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h3>Kelompok 2</h3>
+          <ul class="footer__plain">
+            <li>Komang Indra Pradnya<small>2308561114</small></li>
+            <li>Jevan Bernard Kaloko<small>2308561078</small></li>
+            <li>Pengantar Komputasi Lunak<small>Informatika · Universitas Udayana</small></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© 2026 Kelompok 2 · Informatika Universitas Udayana</span>
+        <span data-f="data">Metode Dempster-Shafer</span>
+        <button class="footer__top" id="toTop" type="button">Kembali ke atas <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="footer__word" aria-hidden="true">LapCare</div>
+  </footer>
+
+  <nav class="bottomnav" aria-label="Navigasi ponsel">
+    <a href="#/" data-nav="beranda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>Beranda</a>
+    <a href="#/pengetahuan" data-nav="pengetahuan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 21V5M8 7h7"/></svg>Pengetahuan</a>
+    <a href="#/diagnosis" data-nav="diagnosis" class="center" aria-label="Diagnosis"><span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>Diagnosis</a>
+    <a href="#/pengujian" data-nav="pengujian"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"/></svg>Pengujian</a>
+    <a href="#/metode" data-nav="metode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4H6l6 8-6 8h12"/></svg>Metode</a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ds.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
