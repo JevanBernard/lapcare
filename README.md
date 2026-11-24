@@ -1,4 +1,4 @@
-# LapCare — Sistem Pakar Diagnosis Kerusakan Laptop (Dempster-Shafer)
+# LapCare - Sistem Pakar Diagnosis Kerusakan Laptop (Dempster-Shafer)
 
 Web app statis (HTML/CSS/JS, tanpa backend). Bisa dibuka langsung dengan klik dua kali `index.html`, termasuk tanpa internet.
 
