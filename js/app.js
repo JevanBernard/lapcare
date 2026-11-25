@@ -585,6 +585,10 @@
       html, mount() {
         countUp(); growBars();
         const root = main;
+        // Laporan A4 dipasang di <body> agar Ctrl+P maupun tombol cetak memakai format laporan.
+        document.body.insertAdjacentHTML("beforeend", printReport(r, gs, unknown, warns));
+        document.body.classList.add("has-report");
+        cleanup.push(() => { $$("body > .print-doc").forEach(el => el.remove()); document.body.classList.remove("has-report"); });
         const selectTab = id => {
           $$(".tabs [role=tab]", root).forEach(b => { const on = b.dataset.tab === id; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
           $$("details.acc", root).forEach(d => { const on = d.id === "p-" + id; d.classList.toggle("is-active", on); if (on) d.open = true; });
@@ -594,7 +598,7 @@
           const b = e.target.closest("button"); if (!b) return;
           if (b.dataset.tab) selectTab(b.dataset.tab);
           else if (b.dataset.add) { toast(b.dataset.add + " ditambahkan, menghitung ulang…"); go("#/hasil?g=" + [...gs, b.dataset.add].join(",")); }
-          else if (b.dataset.act === "print") { $$("details.acc", root).forEach(d => (d.open = true)); window.print(); }
+          else if (b.dataset.act === "print") window.print();
           else if (b.dataset.act === "new") { selected = []; saveSel(); go("#/diagnosis"); }
           else if (b.dataset.num) {
             numMode = b.dataset.num; store.set("lapcare.num", numMode);
@@ -682,6 +686,93 @@
         ${rules.length ? `<ul>${rules.map(x => `<li style="display:block"><div style="display:flex;justify-content:space-between;gap:12px"><span><b>${x.no}</b> terpenuhi ${x.hit.length} dari ${x.jumlah} gejala → ${x.kerusakan} ${esc(KR[x.kerusakan].nama)}</span><span class="muted num">${Math.round(x.hit.length / x.jumlah * 100)}%</span></div>
           <div class="rulebar"><i style="width:${x.hit.length / x.jumlah * 100}%"></i></div>
           <div class="muted" style="font-size:.8125rem;margin-top:6px">${x.gejala.map(g => r.gejala.includes(g) ? `<b style="color:#000">${g}</b>` : g).join(" · ")} · ${esc(x.sumber)}</div></li>`).join("")}</ul>` : `<p class="muted">Belum ada rule yang terpenuhi.</p>`}</div>
+    </div>`;
+  }
+
+  // =====================================================================
+  // LAPORAN CETAK A4 — dokumen terpisah, hanya tampil saat dicetak
+  // =====================================================================
+  function printReport(r, gs, unknown, warns) {
+    const L = E.label, ONE = new DS.Frac(1n);
+    const now = new Date();
+    const tgl = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    const jam = now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    const noDok = "LC-" + now.toISOString().slice(0, 10).replace(/-/g, "") + "-" + gs.join("").replace(/G/g, "").slice(0, 8);
+    const STATUS = { TUNGGAL: "Tunggal", SERI: "Seri", TIDAK_TUNGGAL: "Tidak tunggal" };
+    const bar = (bel, pl) => `<span class="pr-bar"><i class="pl" style="width:${Number(pl) * 100}%"></i><i class="bel" style="width:${Number(bel) * 100}%"></i></span>`;
+    const sec = (n, t, body, cls = "") => `<section class="pr-sec ${cls}"><h2><span>${n}</span>${t}</h2>${body}</section>`;
+
+    // Kesimpulan
+    let kes;
+    if (r.status === "TUNGGAL") {
+      const u = r.utama[0];
+      kes = `<div class="pr-verdict">
+        <div><p class="pr-lbl">Kerusakan paling mungkin</p><p class="pr-big">${u.kode} · ${esc(KR[u.kode].nama)}</p>
+          <p class="pr-muted">${esc(katOfK(u.kode).nama)}</p></div>
+        <div class="pr-vals"><div><p class="pr-lbl">Belief</p><b>${pct(u.bel)}</b></div><div><p class="pr-lbl">Plausibility</p><b>${pct(u.pl)}</b></div></div></div>
+        <p class="pr-note">Bukti dari gejala yang dipilih mendukung <b>${esc(KR[u.kode].nama)}</b> secara pasti sebesar ${pct(u.bel)} (Belief). Kemungkinannya masih terbuka sampai ${pct(u.pl)} (Plausibility).</p>`;
+    } else if (r.status === "SERI") {
+      kes = `<p class="pr-note"><b>${r.utama.length} kerusakan memiliki Belief yang sama (${pct(r.utama[0].bel)}).</b> Hasil seri tidak diputus; tambahkan gejala pembeda untuk memisahkannya.</p>
+        <table class="pr-t"><thead><tr><th>Kode</th><th>Kerusakan</th><th class="r">Belief</th><th class="r">Plausibility</th></tr></thead>
+        <tbody>${r.utama.map(u => `<tr><td>${u.kode}</td><td>${esc(KR[u.kode].nama)}</td><td class="r">${pct(u.bel)}</td><td class="r">${pct(u.pl)}</td></tr>`).join("")}</tbody></table>`;
+    } else {
+      kes = `<p class="pr-note"><b>Belum ada satu kerusakan yang menonjol.</b> Gejala yang dipilih menunjuk ke kelompok kerusakan; Belief tiap kerusakan tunggal masih 0%. Tambahkan gejala yang lebih spesifik.</p>
+        <table class="pr-t"><thead><tr><th>Himpunan</th><th>Anggota</th><th class="r">Massa</th></tr></thead>
+        <tbody>${r.himpunan.map(h => `<tr><td class="mono">${esc(h.label)}</td><td>${esc(h.anggota.map(k => KR[k].nama).join(", "))}</td><td class="r">${dec(h.v)}</td></tr>`).join("")}</tbody></table>`;
+    }
+
+    const catatan = [];
+    if (r.konflikTinggi) catatan.push("<b>Konflik tinggi (K ≥ 0,9).</b> Gejala yang dipilih saling bertentangan; kemungkinan ada lebih dari satu kerusakan.");
+    if (unknown.length) catatan.push(`<b>Kode tidak dikenal diabaikan:</b> ${esc(unknown.join(", "))}.`);
+    warns.forEach(w => catatan.push(`<b>Gejala mirip: ${w.join(", ")}.</b> Bukti bisa terhitung ganda, sehingga Belief tampak lebih tinggi dari seharusnya.`));
+
+    const gejala = `<table class="pr-t"><thead><tr><th class="c">No</th><th>Kode</th><th>Gejala</th><th>Kategori</th><th class="r">m</th><th>Menunjuk</th></tr></thead>
+      <tbody>${gs.map((g, i) => `<tr><td class="c">${i + 1}</td><td>${g}</td><td>${esc(G[g].nama)}</td><td class="nw">${esc(KAT[G[g].kategori]?.nama || "")}</td><td class="r">${dec(E.M[g], 2)}</td><td class="mono">${esc(L(E.H[g]))}</td></tr>`).join("")}</tbody></table>`;
+
+    const kand = r.kandidat.length ? `<table class="pr-t"><thead><tr><th class="c">#</th><th>Kode</th><th>Kerusakan</th><th>Kategori</th><th class="r">Belief</th><th class="r">Plausibility</th><th style="width:30mm">Interval</th></tr></thead>
+      <tbody>${r.kandidat.map((c, i) => `<tr${r.utama.some(u => u.kode === c.kode) ? ' class="is-top"' : ""}><td class="c">${i + 1}</td><td>${c.kode}</td><td>${esc(c.nama)}</td><td>${esc(katOfK(c.kode).nama)}</td><td class="r">${pct(c.bel)}</td><td class="r">${pct(c.pl)}</td><td>${bar(c.bel, c.pl)}</td></tr>`).join("")}</tbody></table>
+      <p class="pr-cap">Kerusakan dengan Plausibility di atas m(θ) = ${dec(r.mTheta)}, maksimal 5, diurutkan menurut Belief lalu Plausibility. Batang gelap = Belief, batang terang = Plausibility.</p>`
+      : `<p class="pr-muted">Tidak ada kerusakan dengan Plausibility di atas m(θ).</p>`;
+
+    const ringkas = `<table class="pr-t"><thead><tr><th class="c">Langkah</th><th>Gejala</th><th>Himpunan</th><th class="r">m(g)</th><th class="r">Konflik K</th><th class="r">1 − K</th><th class="r">m(θ) sesudah</th></tr></thead>
+      <tbody>${r.langkah.map((l, i) => `<tr><td class="c">${i + 1}</td><td>${l.g}</td><td class="mono">${esc(L(l.H))}</td><td class="r">${dec(l.mg, 2)}</td><td class="r">${dec(l.K)}</td><td class="r">${dec(l.penyebut)}</td><td class="r">${dec(l.sesudah.get(E.THETA) || new DS.Frac(0n))}</td></tr>`).join("")}</tbody></table>
+      <h3>Distribusi massa akhir</h3>
+      <table class="pr-t pr-t--half"><thead><tr><th>Himpunan fokus</th><th class="r">Massa</th></tr></thead>
+      <tbody>${[...r.massa].sort((a, b) => b[1].cmp(a[1])).map(([A, v]) => `<tr><td class="mono">m${A === E.THETA ? "(θ)" : esc(L(A))}</td><td class="r">${dec(v)}</td></tr>`).join("")}</tbody></table>`;
+
+    const solusi = r.status === "TIDAK_TUNGGAL"
+      ? `<p class="pr-muted">Solusi ditampilkan setelah satu kerusakan menonjol. Tambahkan gejala pembeda lalu diagnosis ulang.</p>`
+      : r.utama.map(u => { const s = SOL[u.kode]; return `<div class="pr-sol">
+          <p class="pr-sol__h"><b>${u.kode} · ${esc(KR[u.kode].nama)}</b><span class="pr-tag">${esc(TINGKAT[s.tingkat] || s.tingkat)}</span></p>
+          <div class="pr-cols"><div><h4>Dicoba sendiri</h4>${s.sendiri.length ? `<ol>${s.sendiri.map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<p class="pr-muted">Tidak ada langkah mandiri.</p>`}</div>
+          <div><h4>Oleh teknisi</h4>${s.teknisi.length ? `<ol>${s.teknisi.map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<p class="pr-muted">—</p>`}</div></div></div>`; }).join("")
+        + `<p class="pr-safety"><b>Keselamatan dulu.</b> Matikan laptop dan lepas adaptor sebelum membuka atau membersihkan. Bila laptop masih bergaransi, jangan dibongkar sendiri.</p>`;
+
+    const lampiran = r.langkah.map((l, i) => `<div class="pr-step">
+        <p class="pr-step__h"><b>Langkah ${i + 1} — gabungkan ${l.g}</b> (${esc(G[l.g].nama)})<br>
+          <span class="mono">m${esc(L(l.H))} = ${dec(l.mg)} · m(θ) = ${dec(ONE.sub(l.mg))}</span></p>
+        <table class="pr-t pr-t--sm"><thead><tr><th>Massa sebelumnya</th><th>Gejala ${l.g}</th><th>Irisan</th><th class="r">Hasil kali</th></tr></thead>
+        <tbody>${l.sel.map(s => `<tr${s.konflik ? ' class="is-conf"' : ""}><td class="mono">${esc(L(s.A))} = ${dec(s.a)}</td><td class="mono">${esc(L(s.B))} = ${dec(s.b)}</td><td class="mono">${s.konflik ? "∅ (konflik)" : esc(L(s.C))}</td><td class="r">${dec(s.v)}</td></tr>`).join("")}</tbody></table>
+        <p class="pr-step__k">K = ${dec(l.K)} · 1 − K = ${dec(l.penyebut)} · Sesudah normalisasi: <span class="mono">${[...l.sesudah].sort((a, b) => b[1].cmp(a[1])).map(([A, v]) => `m${A === E.THETA ? "(θ)" : esc(L(A))} = ${dec(v)}`).join("; ")}</span></p></div>`).join("");
+
+    return `<div class="print-doc" aria-hidden="true">
+      <header class="pr-head">
+        <div class="pr-brand"><span class="pr-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14v9H5zM3 19h18"/></svg></span>
+          <div><b>LapCare</b><small>Sistem Pakar Diagnosis Kerusakan Hardware Laptop · Metode Dempster-Shafer</small></div></div>
+        <div class="pr-meta"><span>No. ${esc(noDok)}</span><span>${tgl}, ${jam}</span></div>
+      </header>
+      <h1 class="pr-title">Laporan Hasil Diagnosis</h1>
+      <table class="pr-info"><tr><td>Status hasil</td><td><b>${STATUS[r.status]}</b></td><td>Jumlah gejala</td><td><b>${gs.length}</b></td></tr>
+        <tr><td>Konflik K tertinggi</td><td><b>${dec(r.langkah.reduce((m, l) => (l.K.cmp(m) > 0 ? l.K : m), new DS.Frac(0n)))}</b></td><td>m(θ) akhir</td><td><b>${dec(r.mTheta)}</b></td></tr></table>
+      ${sec(1, "Kesimpulan", kes, "pr-sec--verdict")}
+      ${catatan.length ? `<div class="pr-warn">${catatan.map(c => `<p>${c}</p>`).join("")}</div>` : ""}
+      ${sec(2, "Gejala yang dipilih", gejala + `<p class="pr-cap">Urutan sesuai pemilihan; bukti digabung dalam urutan ini. m = nilai kepercayaan gejala.</p>`)}
+      ${sec(3, "Kandidat kerusakan", kand)}
+      ${sec(4, "Rekomendasi solusi", solusi, "pr-sec--flow")}
+      ${sec(5, "Ringkasan perhitungan", ringkas)}
+      ${sec("A", "Lampiran: rincian kombinasi Dempster", `<p class="pr-cap">Dimulai dari m(θ) = 1. Setiap langkah mengalikan massa sebelumnya dengan massa gejala baru; irisan kosong (∅) adalah konflik K, lalu hasil dinormalisasi dengan membagi 1 − K. Angka dibulatkan 4 digit; perhitungan memakai pecahan eksak.</p>${lampiran}`, "pr-sec--appendix")}
+      <footer class="pr-foot"><p>Hasil ini merupakan alat bantu diagnosis berbasis basis pengetahuan dari Saragih dkk. (2018), Arifin &amp; Norhikmah (2024), dan Hilda dkk. (2023), bukan pengganti pemeriksaan teknisi.</p>
+        <p>LapCare · Kelompok 2 · Pengantar Komputasi Lunak · Informatika Universitas Udayana</p></footer>
     </div>`;
   }
 

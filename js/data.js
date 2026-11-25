@@ -1,6 +1,6 @@
 // Dibuat otomatis oleh scripts/build-data.js dari data/*.csv — jangan disunting manual.
 window.LAPCARE_DATA = {
- "dibuat": "2026-11-24T08:53:10.362Z",
+ "dibuat": "2026-11-25T07:13:49.368Z",
  "kategori": [
   {
    "id": "layar",
